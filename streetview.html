@@ -1,0 +1,85 @@
+
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Street View service</title>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
+    <style>
+    body {
+      overflow:hidden;
+    }
+      html, body, #map-canvas {
+        height: 100%;
+        margin: 0px;
+        padding: 0px
+      }
+      .hidden {
+        display:none;
+      }
+      .normalone{
+        display: inline;
+      }
+      #TopOne{
+        position: relative;
+        height:20px;
+        float:right;
+        width:500px;
+        z-index: 1;
+        background-color: white;
+      }
+      #leftarm{
+        pointer-events: none;
+        width:270px;
+        height:360px;
+
+        position: fixed;
+        float:left;
+        bottom:0px;
+        z-index: 50;
+        left: 0px;
+      }
+      #rightarm{
+        pointer-events: none;
+        width:270px;
+        height:360px;
+
+        position: fixed;
+        float:right;
+        bottom:0px;
+        z-index: 50;
+        right: 0px;
+      }
+      #pano{
+
+      }
+      .no-close .ui-dialog-titlebar-close {
+        display: none;
+      }
+    </style>
+    <script src="https://www.google.com/jsapi"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+  </head>
+  <body>
+    <div id="leftarm" align="left"></div>
+    <div id="rightarm" align="right"></div>
+
+    <div id="loadsign"></div>
+    <div id="map-canvas" class="hidden" style="width: 400px; height: 300px"></div>
+
+    <div id="battlescreen2" class="hidden" style="position:absolute; left:0px; top: 0px; width: 100%; height: 100%; z-index: 49;"><canvas id="myCanvas2"  style="position:absolute; left:0px; top: 0px; border:10px solid #FF0000;">></canvas></div>
+
+    <div id="battlescreen" class="hidden" style="position:absolute; left:0px; top: 0px; width: 100%; height: 100%; z-index: 48;"><canvas id="myCanvas"  style="position:absolute; left:0px; top: 0px; border:10px solid #FF0000;">></canvas></div>
+
+    <div id="loadscreen" style="position:absolute; left:0px; top: 0px; width: 100%; height: 100%; z-index: 51; background-color: white;"><center>LOADING GAME</center></div>
+    <div id="pano" style="position:absolute; left:0px; top: 0px; width: 100%; height: 100%;"></div>
+    <div id="TopOne" align="right"><div id = "country"></div></div>
+    <div id="popupwin" class="hidden" title="herp"></div>
+    <div id="inventory" class="hidden" title="inventory"></div>
+
+    <script type="text/javascript" src="googlejs.js"></script>
+  </body>
+</html>
