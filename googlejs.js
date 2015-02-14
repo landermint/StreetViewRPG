@@ -50,7 +50,7 @@ var maxnumber = 100;
 var enemies = {
 
 }
-
+var fireballCounter = 0;
 var gamestage = 0;
 var enemyHurtCounter = 0;
 var locations = [
@@ -162,6 +162,7 @@ var openfirstwin = false;
 var encounter = false;
 var startbattle = false;
 var enemyHP = 0;
+var attacked = 0;
 ////
 //fight vars
 var enctype;
@@ -171,12 +172,45 @@ var loadsc2 = document.getElementById('battlescreen2');
 
 var searchcount = 0;
 
+var la1;
+var la2;
+var la3;
+
+var ra1;
+var ra2;
+var ra3;
+//arms
+la1 = new Image();
+la1.src = "images/image1left.png";
+la2 = new Image();
+la2.src = "images/image2left.png";
+la3 = new Image();
+la3.src = "images/image3left.png";
+
+ra1 = new Image();
+ra1.src = "images/image1right.png";
+ra2 = new Image();
+ra2.src = "images/image2right.png";
+ra3 = new Image();
+ra3.src = "images/image3right.png";
+
+
 var leftarm = document.getElementById('leftarm');
 var rightarm = document.getElementById('rightarm');
 
-leftarm.style.backgroundImage = "url(images/image1left.png)";
-rightarm.style.backgroundImage = "url(images/image1right.png)";
+leftarm.innerHTML = '<canvas id="leftarmcan" width="270" height="360"></canvas>';
+rightarm.innerHTML = '<canvas id="rightarmcan" width="270" height="360"></canvas>';
 
+var lacan = document.getElementById("leftarmcan");
+var lacancon = lacan.getContext("2d");
+
+var racan = document.getElementById("rightarmcan");
+var racancon = racan.getContext("2d");
+
+lacancon.drawImage(la1,0,0);
+racancon.drawImage(ra1,0,0);
+
+//clear canvas
 clearcan();
 function searchComplete(termen) {
 
@@ -242,6 +276,9 @@ function OnLoad() {
 google.setOnLoadCallback(OnLoad);
 ////
 function initialize() {
+  lacancon.drawImage(la1,0,0);
+  racancon.drawImage(ra1,0,0);
+
   var theplace = locations[Math.floor(Math.random() * (locations.length - 0)) + 0]
   var theplace2 = theplace.split(",");
   var fenway = new google.maps.LatLng(theplace2[0], theplace2[1]);
@@ -337,6 +374,12 @@ function searchpres() {
 }
 var enemyimg;
 
+var chomp1;
+var chomp2;
+var chomp3;
+var chomp4;
+var chomp5;
+
 function beginfight() {
   fireballimg = new Image();
   fireballimg.src = "images/fireball.png";
@@ -352,6 +395,17 @@ function beginfight() {
   if (startbattle == true) {
     enemyimg = new Image();
     enemyimg.src = enemies.doctor.url;
+
+    chomp1 = new Image();
+    chomp1.src = "images/c1.png";
+    chomp2 = new Image();
+    chomp2.src = "images/c2.png";
+    chomp3 = new Image();
+    chomp3.src = "images/c3.png";
+    chomp4 = new Image();
+    chomp4.src = "images/c4.png";
+    chomp5 = new Image();
+    chomp5.src = "images/c5.png";
 
     if (enctype == 0) {
       alertwin.innerHTML = "You have enountered a wild animal!";
@@ -390,9 +444,10 @@ var imgdem = 150;
 var modify = 0;
 function beginfighttrue() {
   attack = Math.floor((Math.random() * 200) + 1);
-  if (attack == 1){
-    pauseSpeed(250);
+  if (attack == 1 && chompframe==0 && attacked == 0){
+    pauseSpeed(500);
     modify = 80;
+    chomp();
   }
 
   context.clearRect(0, 0, canvas.width, canvas.height);
@@ -423,15 +478,35 @@ function beginfighttrue() {
 }
 var chompframe = 0;
 function chomp(){
-  chompframe
+  chompframe++;
+  context2.clearRect(enemyposx-modify/2, enemyposy-modify/2, imgdem+modify, imgdem+modify);
   if(chompframe == 1){
+    context2.drawImage(chomp1, enemyposx, enemyposy);
+  }
+  if(chompframe == 2){
+    context2.drawImage(chomp2, enemyposx, enemyposy);
+  }
+  if(chompframe == 3){
+    context2.drawImage(chomp3, enemyposx, enemyposy);
+  }
+  if(chompframe == 4){
+    context2.drawImage(chomp4, enemyposx, enemyposy);
+  }
+  if(chompframe == 5){
+    context2.drawImage(chomp5, enemyposx, enemyposy);
+  }
+  if(chompframe == 6){
+    context2.clearRect(enemyposx-modify/2, enemyposy-modify/2, imgdem+modify, imgdem+modify);
 
   }
-  setTimeout(chomp, 100);
+  if (chompframe<7){
+    setTimeout(chomp, 65);
+  }
 }
 function pauseSpeed(speedvar){
   speed = 0;
   speed2 = 0;
+  attacked = 0;
   setTimeout(startSpeed, speedvar);
 }
 function startSpeed(){
@@ -443,6 +518,7 @@ function startSpeed(){
     speed = (Math.floor(Math.random() * (20 - 8)) + 8) * -1;
     speed2 = (Math.floor(Math.random() * (20 - 8)) + 8) * -1;
   }
+  chompframe = 0;
   modify = 0;
 }
 var mousecounter = 0;
@@ -464,9 +540,13 @@ canvas2.addEventListener('mousedown', function(evt) {
   //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
   mousex = mousePos.x;
   mousey = mousePos.y;
-  mouseclick();
   counterup();
-  setTimeout(fireball, 20);
+  if (fireballCounter == 0){
+    mouseclick();
+
+    setTimeout(fireball, 20);
+    fireballCounter = 1;
+  }
   //console.log(message);
 }, false);
 
@@ -479,20 +559,26 @@ function counterup(){
   mousecounter2 = 1;
 }
   function mouseclick(){
-    if (mousecounter <= 60){
+    if (mousecounter <= 30){
       mousecounter++;
-      if (mousecounter <= 30){
-        leftarm.style.backgroundImage = "url(images/image2left.png)";
-        rightarm.style.backgroundImage = "url(images/image2right.png)";
+      if (mousecounter <= 15){
+        lacancon.clearRect(0,0,270,360);
+        racancon.clearRect(0,0,270,360);
+        lacancon.drawImage(la2,0,0);
+        racancon.drawImage(ra2,0,0);
       }
-      if (mousecounter > 30){
-        leftarm.style.backgroundImage = "url(images/image3left.png)";
-        rightarm.style.backgroundImage = "url(images/image3right.png)";
+      if (mousecounter > 15){
+        lacancon.clearRect(0,0,270,360);
+        racancon.clearRect(0,0,270,360);
+        lacancon.drawImage(la3,0,0);
+        racancon.drawImage(ra3,0,0);
       }
       setTimeout(mouseclick, 1);
     } else {
-      leftarm.style.backgroundImage = "url(images/image1left.png)";
-      rightarm.style.backgroundImage = "url(images/image1right.png)";
+      lacancon.clearRect(0,0,270,360);
+      racancon.clearRect(0,0,270,360);
+      lacancon.drawImage(la1,0,0);
+      racancon.drawImage(ra1,0,0);
       mousecounter = 0;
       //break;
     }
@@ -518,12 +604,22 @@ function counterup(){
         && mousexnew-offsetsize < enemyposx+imgdem
         && mouseynew-offsetsize > enemyposy
         && mouseynew-offsetsize < enemyposy+imgdem){
-        pauseSpeed(500);
+          attacked = 1;
+          pauseSpeed(80);
       }
-      setTimeout(fireball2, 41);
+
+      if (sizex < 1){
+
+        fireballCounter = 0;
+      }
+
+        setTimeout(fireball2, 41);
+
       //console.log(mousecounter3);
     }
-    fireball2();
+
+      fireball2();
+
   }
   /*
   var offsetsize = 75;
