@@ -1,3 +1,9 @@
+/*
+function dothis(){
+  console.log(encounter);
+  setTimeout(dothis,1);
+}
+*/
 var canvas = document.getElementById('myCanvas'),
   context = canvas.getContext('2d');
 
@@ -16,11 +22,11 @@ var canvas = document.getElementById('myCanvas'),
 })();
 
 var canvas2 = document.getElementById('myCanvas2'),
-context2 = canvas2.getContext('2d');
+  context2 = canvas2.getContext('2d');
 
 (function() {
   var canvas2 = document.getElementById('myCanvas2'),
-  context2 = canvas2.getContext('2d');
+    context2 = canvas2.getContext('2d');
 
   // resize the canvas to fill browser window dynamically
   window.addEventListener('resize', resizeCanvas2, false);
@@ -157,15 +163,28 @@ var properitem;
 var panorama;
 var hud = document.getElementById('TopOne');
 var hudCountry = document.getElementById('country');
+var health = 100;
+var level = 1;
+var hudHealth = document.getElementById('health');
+hudHealth.innerHTML = "Health = " + health;
+
+var emHealth = document.getElementById('emHP');
+//emHealth.innerHTML = "";
+
 var gamestarted = false;
 var openfirstwin = false;
 var encounter = false;
 var startbattle = false;
+var itemadded = false;
+var additem = false;
+var invitems = [];
 var enemyHP = 0;
 var attacked = 0;
+var attacking = 0;
 ////
 //fight vars
 var enctype;
+var itemtype;
 var alertwin = document.getElementById('popupwin');
 var loadsc = document.getElementById('battlescreen');
 var loadsc2 = document.getElementById('battlescreen2');
@@ -207,11 +226,23 @@ var lacancon = lacan.getContext("2d");
 var racan = document.getElementById("rightarmcan");
 var racancon = racan.getContext("2d");
 
-lacancon.drawImage(la1,0,0);
-racancon.drawImage(ra1,0,0);
+lacancon.drawImage(la1, 0, 0);
+racancon.drawImage(ra1, 0, 0);
 
 //clear canvas
-clearcan();
+//clearcan();
+
+var enemyposx = 10;
+var enemyposy = 10;
+var speed = -5;
+var speed2 = -5;
+var imgdem = 150;
+var modify = 0;
+///
+var mousecounter = 0;
+
+var mousex;
+var mousey;
 function searchComplete(termen) {
 
   // Check that we got results
@@ -252,6 +283,9 @@ function searchComplete(termen) {
     if (encounter == true) {
       startbattle = true;
     }
+    if (additem == true){
+      itemadded = true;
+    }
   }
 }
 
@@ -276,8 +310,8 @@ function OnLoad() {
 google.setOnLoadCallback(OnLoad);
 ////
 function initialize() {
-  lacancon.drawImage(la1,0,0);
-  racancon.drawImage(ra1,0,0);
+  lacancon.drawImage(la1, 0, 0);
+  racancon.drawImage(ra1, 0, 0);
 
   var theplace = locations[Math.floor(Math.random() * (locations.length - 0)) + 0]
   var theplace2 = theplace.split(",");
@@ -381,6 +415,9 @@ var chomp4;
 var chomp5;
 
 function beginfight() {
+  window.getSelection().removeAllRanges();
+
+  context.clearRect(0, 0, canvas.width, canvas.height);
   fireballimg = new Image();
   fireballimg.src = "images/fireball.png";
 
@@ -393,6 +430,8 @@ function beginfight() {
 
   }
   if (startbattle == true) {
+    enemyHP = 100;
+    emHealth.innerHTML = "Enemy HP: " + enemyHP;
     enemyimg = new Image();
     enemyimg.src = enemies.doctor.url;
 
@@ -409,11 +448,11 @@ function beginfight() {
 
     if (enctype == 0) {
       alertwin.innerHTML = "You have enountered a wild animal!";
-      alertwin.innerHTML += "<p><img src="+enemies.doctor.url+" alt=\"Animal\" height="+enemies.doctor.ysize*2+" width="+enemies.doctor.xsize*2+"></p>";
+      alertwin.innerHTML += "<p><img src=" + enemies.doctor.url + " alt=\"Animal\" height=" + enemies.doctor.ysize * 2 + " width=" + enemies.doctor.xsize * 2 + "></p>";
     }
     if (enctype == 1) {
       alertwin.innerHTML = "You have enountered an escaped prisoner!";
-      alertwin.innerHTML += "<p><img src="+enemies.doctor.url+" alt=\"Animal\" height="+enemies.doctor.ysize*2+" width="+enemies.doctor.xsize*2+"></p>";
+      alertwin.innerHTML += "<p><img src=" + enemies.doctor.url + " alt=\"Animal\" height=" + enemies.doctor.ysize * 2 + " width=" + enemies.doctor.xsize * 2 + "></p>";
     }
 
 
@@ -436,82 +475,86 @@ function beginfight() {
     setTimeout(beginfight, 1);
   }
 }
-var enemyposx = 10;
-var enemyposy = 10;
-var speed = -5;
-var speed2 = -5;
-var imgdem = 150;
-var modify = 0;
+
 function beginfighttrue() {
-  attack = Math.floor((Math.random() * 200) + 1);
-  if (attack == 1 && chompframe==0 && attacked == 0){
-    pauseSpeed(500);
-    modify = 80;
-    chomp();
-  }
+  if (encounter == true) {
+    attack = Math.floor((Math.random() * 200) + 1);
+    if (attack == 1 && chompframe == 0 && attacked == 0) {
+      pauseSpeed(500);
+      modify = 80;
+      attacking = 1;
+      chomp();
+    }
 
-  context.clearRect(0, 0, canvas.width, canvas.height);
+    context.clearRect(0, 0, canvas.width, canvas.height);
 
-  context.drawImage(enemyimg, enemyposx-modify/2, enemyposy-modify/2, imgdem+modify, imgdem+modify);
+    context.drawImage(enemyimg, enemyposx - modify / 2, enemyposy - modify / 2, imgdem + modify, imgdem + modify);
 
-  // if its animal
-  enemyposx += speed;
-  enemyposy += speed2;
-  if (enemyposx <= 0) {
-    speed = Math.floor(Math.random() * (20 - 8)) + 8;
-  }
-  if (enemyposx >= canvas.width - imgdem) {
-    speed = (Math.floor(Math.random() * (20 - 8)) + 8) * -1;
-  }
-  if (enemyposy <= 0) {
-    speed2 = Math.floor(Math.random() * (20 - 8)) + 8;
-  }
-  if (enemyposy >= canvas.height - imgdem) {
-    speed2 = (Math.floor(Math.random() * (20 - 8)) + 8) * -1;
-  }
-  //
-  //console.log(canvas.height);
+    // if its animal
+    enemyposx += speed;
+    enemyposy += speed2;
+    if (enemyposx <= 0) {
+      speed = Math.floor(Math.random() * (20 - 8)) + 8;
+    }
+    if (enemyposx >= canvas.width - imgdem) {
+      speed = (Math.floor(Math.random() * (20 - 8)) + 8) * -1;
+    }
+    if (enemyposy <= 0) {
+      speed2 = Math.floor(Math.random() * (20 - 8)) + 8;
+    }
+    if (enemyposy >= canvas.height - imgdem) {
+      speed2 = (Math.floor(Math.random() * (20 - 8)) + 8) * -1;
+    }
+    //
+    //console.log(canvas.height);
 
-  console.log(mousecounter2);
-  setTimeout(beginfighttrue, 20);
-
+    console.log(mousecounter2);
+    setTimeout(beginfighttrue, 20);
+  }
 }
 var chompframe = 0;
-function chomp(){
+
+function chomp() {
   chompframe++;
-  context2.clearRect(enemyposx-modify/2, enemyposy-modify/2, imgdem+modify, imgdem+modify);
-  if(chompframe == 1){
+  context2.clearRect(enemyposx - modify / 2, enemyposy - modify / 2, imgdem + modify, imgdem + modify);
+  if (chompframe == 1) {
     context2.drawImage(chomp1, enemyposx, enemyposy);
   }
-  if(chompframe == 2){
+  if (chompframe == 2) {
     context2.drawImage(chomp2, enemyposx, enemyposy);
   }
-  if(chompframe == 3){
+  if (chompframe == 3) {
     context2.drawImage(chomp3, enemyposx, enemyposy);
   }
-  if(chompframe == 4){
+  if (chompframe == 4) {
     context2.drawImage(chomp4, enemyposx, enemyposy);
   }
-  if(chompframe == 5){
+  if (chompframe == 5) {
     context2.drawImage(chomp5, enemyposx, enemyposy);
   }
-  if(chompframe == 6){
-    context2.clearRect(enemyposx-modify/2, enemyposy-modify/2, imgdem+modify, imgdem+modify);
+  if (chompframe == 6) {
+    //damage
+    health -= Math.floor(Math.random() * ((5 + level * 2) - (level * 1.5)) + (level * 1.5));
+    hudHealth.innerHTML = "Health = " + health;
+
+    context2.clearRect(enemyposx - modify / 2, enemyposy - modify / 2, imgdem + modify, imgdem + modify);
 
   }
-  if (chompframe<7){
+  if (chompframe < 7) {
     setTimeout(chomp, 65);
   }
 }
-function pauseSpeed(speedvar){
+
+function pauseSpeed(speedvar) {
   speed = 0;
   speed2 = 0;
   attacked = 0;
   setTimeout(startSpeed, speedvar);
 }
-function startSpeed(){
+
+function startSpeed() {
   var randomNumber = Math.random() >= 0.5;
-  if (randomNumber == true){
+  if (randomNumber == true) {
     speed = Math.floor(Math.random() * (20 - 8)) + 8;
     speed2 = Math.floor(Math.random() * (20 - 8)) + 8;
   } else {
@@ -519,18 +562,16 @@ function startSpeed(){
     speed2 = (Math.floor(Math.random() * (20 - 8)) + 8) * -1;
   }
   chompframe = 0;
+  attacking = 0;
   modify = 0;
 }
-var mousecounter = 0;
 
-var mousex;
-var mousey;
 
 function getMousePos(canvas, evt) {
   var rect = canvas.getBoundingClientRect();
   return {
-    x: evt.clientX - rect.left-10,
-    y: evt.clientY - rect.top-10
+    x: evt.clientX - rect.left - 10,
+    y: evt.clientY - rect.top - 10
   };
 
 }
@@ -541,7 +582,7 @@ canvas2.addEventListener('mousedown', function(evt) {
   mousex = mousePos.x;
   mousey = mousePos.y;
   counterup();
-  if (fireballCounter == 0){
+  if (fireballCounter == 0) {
     mouseclick();
 
     setTimeout(fireball, 20);
@@ -555,76 +596,170 @@ canvas2.addEventListener('mouseup', function(evt) {
   mousecounter2 = 0;
 }, false);
 
-function counterup(){
+function counterup() {
   mousecounter2 = 1;
 }
-  function mouseclick(){
-    if (mousecounter <= 30){
-      mousecounter++;
-      if (mousecounter <= 15){
-        lacancon.clearRect(0,0,270,360);
-        racancon.clearRect(0,0,270,360);
-        lacancon.drawImage(la2,0,0);
-        racancon.drawImage(ra2,0,0);
-      }
-      if (mousecounter > 15){
-        lacancon.clearRect(0,0,270,360);
-        racancon.clearRect(0,0,270,360);
-        lacancon.drawImage(la3,0,0);
-        racancon.drawImage(ra3,0,0);
-      }
-      setTimeout(mouseclick, 1);
-    } else {
-      lacancon.clearRect(0,0,270,360);
-      racancon.clearRect(0,0,270,360);
-      lacancon.drawImage(la1,0,0);
-      racancon.drawImage(ra1,0,0);
-      mousecounter = 0;
-      //break;
+
+function mouseclick() {
+  if (mousecounter <= 30) {
+    mousecounter++;
+    if (mousecounter <= 15) {
+      lacancon.clearRect(0, 0, 270, 360);
+      racancon.clearRect(0, 0, 270, 360);
+      lacancon.drawImage(la2, 0, 0);
+      racancon.drawImage(ra2, 0, 0);
     }
+    if (mousecounter > 15) {
+      lacancon.clearRect(0, 0, 270, 360);
+      racancon.clearRect(0, 0, 270, 360);
+      lacancon.drawImage(la3, 0, 0);
+      racancon.drawImage(ra3, 0, 0);
+    }
+    setTimeout(mouseclick, 1);
+  } else {
+    lacancon.clearRect(0, 0, 270, 360);
+    racancon.clearRect(0, 0, 270, 360);
+    lacancon.drawImage(la1, 0, 0);
+    racancon.drawImage(ra1, 0, 0);
+    mousecounter = 0;
+    //break;
   }
-  function clearcan(){
-    //context2.clearRect(0, 0, canvas2.width, canvas2.height);
-    setTimeout(clearcan, 41);
-  }
-  function fireball(){
+}
+
+function clearcan() {
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context2.clearRect(0, 0, canvas2.width, canvas2.height);
+}
+
+function fireball() {
     var sizex = 150;
     var sizey = 150;
     var mousexnew = mousex;
     var mouseynew = mousey;
-    function fireball2(){
-      var offsetsize = sizex/2;
-      context2.clearRect(mousexnew-offsetsize-25, mouseynew-offsetsize-25, sizex+50, sizey+50);
-      context2.drawImage(fireballimg, mousexnew-offsetsize, mouseynew-offsetsize, sizex, sizey);
-      sizex-=15;
-      sizey-=15;
-      if (sizex < 1
-        && sizex >-25
-        && mousexnew-offsetsize > enemyposx
-        && mousexnew-offsetsize < enemyposx+imgdem
-        && mouseynew-offsetsize > enemyposy
-        && mouseynew-offsetsize < enemyposy+imgdem){
-          attacked = 1;
+
+    function fireball2() {
+      var offsetsize = sizex / 2;
+      context2.clearRect(mousexnew - offsetsize - 25, mouseynew - offsetsize - 25, sizex + 50, sizey + 50);
+      context2.drawImage(fireballimg, mousexnew - offsetsize, mouseynew - offsetsize, sizex, sizey);
+      sizex -= 15;
+      sizey -= 15;
+      if (sizex < 1 && sizex > -25 && mousexnew - offsetsize > enemyposx && mousexnew - offsetsize < enemyposx + imgdem && mouseynew - offsetsize > enemyposy && mouseynew - offsetsize < enemyposy + imgdem && startbattle == true) {
+        attacked = 1;
+        if (attacking == 0) {
           pauseSpeed(80);
+        }
+        enemyHP -= 50;
+        emHealth.innerHTML = "Enemy HP: " + enemyHP;
+        if (enemyHP <= 0) {
+          encounter = false;
+          startbattle = false;
+          emHealth.innerHTML = " ";
+          //enemyimg = undefined;
+          itemtype = Math.floor(Math.random() * (1.9 - 0)) + 0;
+          additem = true;
+          additemfun();
+          setTimeout(clearcan,20);
+          //loadsc2.className = "hidden";
+          //loadsc.className = "hidden";
+        }
       }
 
-      if (sizex < 1){
+      if (sizex < 1) {
 
         fireballCounter = 0;
       }
 
-        setTimeout(fireball2, 41);
+      setTimeout(fireball2, 41);
 
       //console.log(mousecounter3);
     }
 
-      fireball2();
+    fireball2();
 
   }
+
+  ///add items
+  function additemfun(){
+    if (itemtype == 0) {
+      imageSearch.execute(properitem + " clothing");
+
+    }
+    if (itemtype == 1) {
+      imageSearch.execute(properitem + " hand weapons");
+
+    }
+    if (itemadded == true){
+      //console.log(enemies.doctor.url);
+      //4th item = whether equipped or not
+      if (itemtype == 0) {
+        invitems[invitems.length] = [enemies.doctor.url,enemies.doctor.ysize,enemies.doctor.xsize,"Clothing from "+properitem,1,false];
+      }
+      if (itemtype == 1) {
+        invitems[invitems.length] = [enemies.doctor.url,enemies.doctor.ysize,enemies.doctor.xsize,"Weapon from "+properitem,2,false];
+      }
+      refreshinv();
+      $("#inventory").dialog({
+        //  resizable: false,
+        width: 600,
+        height: 550,
+        dialogClass: "no-close",
+        buttons: [{
+          text: "OK",
+          click: function() {
+            loadsc2.className = "hidden";
+            loadsc.className = "hidden";
+            itemadded = false;
+            additem = false;
+            $('body').css('cursor', 'crosshair');
+            $(this).dialog("close");
+          }
+        }]
+      });
+    } else {
+      setTimeout(additemfun,1);
+    }
+  }
+function refreshinv(){
+  var htmlstring;
+  htmlstring = '<table border="2" style="width:100%">';
+  for (i = 0; i < invitems.length; i++){
+    if (invitems[i][5] == false){
+      htmlstring += '<tr>';
+    } else {
+      htmlstring += '<tr bgcolor="red">';
+    }
+    htmlstring += '<td>';
+    htmlstring += "<img src=" + invitems[i][0] + " alt="+invitems[i][4]+" height=" + invitems[i][1] + " width=" + invitems[i][2] + ">";
+    htmlstring += '</td>';
+    htmlstring += '<td>';
+    htmlstring += '<a href="javascript:void(0)" onclick="equipitem('+i+','+invitems[i][4]+');">'+invitems[i][3]+'</a>';
+    htmlstring += '</td>';
+    htmlstring += '</tr>';
+  }
+  htmlstring += '</table>';
+  document.getElementById('inventory').innerHTML = htmlstring;
+}
+function equipitem(itemnum,itemtype){
+  var donothing = false;
+  for (i = 0; i < invitems.length;i++){
+    if (invitems[i][5] == true && invitems[i][4] == itemtype && i!=itemnum){
+      donothing = true;
+    }
+  }
+  console.log(itemtype);
+  if (donothing == false){
+    if (invitems[itemnum][5] == true){
+      invitems[itemnum][5] = false;
+    } else {
+      invitems[itemnum][5] = true;
+    }
+  }
+  refreshinv();
+}
   /*
   var offsetsize = 75;
   context.drawImage(fireballimg, mousex-offsetsize, mousey-offsetsize, 150, 150);
   setTimeout(fireball, 20);
   */
   //google.maps.event.addDomListener(window, 'load', initialize);
-//console.log(google.maps.LatLng);
+  //console.log(google.maps.LatLng);
