@@ -59,6 +59,7 @@ var enemies = {
 var fireballCounter = 0;
 var gamestage = 0;
 var enemyHurtCounter = 0;
+//coords
 var locations = [
   "22.503636,114.0827",
   "55.77224,37.59361",
@@ -159,18 +160,27 @@ var locations = [
   "-30.830806,30.394241",
   "-22.353273,-47.377016"
 ];
-var properitem;
-var panorama;
-var hud = document.getElementById('TopOne');
-var hudCountry = document.getElementById('country');
 var health = 100;
 var level = 1;
+var properitem;
+var panorama;
+var money = 0;
+
+var hud = document.getElementById('TopOne');
+var hudCountry = document.getElementById('country');
+var moneydiv = document.getElementById('moneydiv');
+moneydiv.innerHTML = "Money: " +money;
+
 var hudHealth = document.getElementById('health');
-hudHealth.innerHTML = "Health = " + health;
+hudHealth.innerHTML = "Health: " + health;
 
 var emHealth = document.getElementById('emHP');
 //emHealth.innerHTML = "";
 
+//game variables
+var invcounter = 0;
+
+var weaponimage;
 var invopened = false;
 var gamestarted = false;
 var openfirstwin = false;
@@ -192,8 +202,11 @@ var itemtype;
 var alertwin = document.getElementById('popupwin');
 var loadsc = document.getElementById('battlescreen');
 var loadsc2 = document.getElementById('battlescreen2');
+var invbut = document.getElementById('invbutton');
 
 var searchcount = 0;
+
+//arm image variables
 
 var la1;
 var la2;
@@ -233,8 +246,7 @@ var racancon = racan.getContext("2d");
 lacancon.drawImage(la1, 0, 0);
 racancon.drawImage(ra1, 0, 0);
 
-//clear canvas
-//clearcan();
+//enemy postition vars
 
 var enemyposx = 10;
 var enemyposy = 10;
@@ -247,6 +259,25 @@ var mousecounter = 0;
 
 var mousex;
 var mousey;
+
+var encountercounter = 0;
+
+/*
+window.onkeyup = function(e) {
+   var key = e.keyCode ? e.keyCode : e.which;
+
+   if (key == 65) {
+     loadsc2.className = "hidden";
+     loadsc.className = "hidden";
+     itemadded = false;
+     additem = false;
+     invopened = false;
+     encounter = false;
+     startbattle = false;
+     addingfinished = false;
+   }
+}
+*/
 
 function searchComplete(termen) {
 
@@ -312,6 +343,7 @@ function OnLoad() {
   //google.search.Search.getBranding('branding');
 
 }
+
 google.setOnLoadCallback(OnLoad);
 ////
 function initialize() {
@@ -368,7 +400,7 @@ function findpos() {
           loadsc.title = "Enemy encountered!";
           loadsc2.className = "normalone";
           loadsc2.title = "Enemy encountered!";
-          enctype = Math.floor(Math.random() * (1.9 - 0)) + 0;
+          enctype = Math.random() >= 0.5;
           //  console.log(enctype);
           alertwin.title = "You have encountered an enemy!";
 
@@ -423,21 +455,52 @@ var chomp4;
 var chomp5;
 
 function beginfight() {
+  if (encountercounter == 500) {
+    $("#failedenc").dialog({
+      //  resizable: false,
+      width: 400,
+      height: 550,
+      dialogClass: "no-close",
+      buttons: [{
+        text: "OK",
+        click: function() {
+          loadsc2.className = "hidden";
+          loadsc.className = "hidden";
+          itemadded = false;
+          additem = false;
+          invopened = false;
+          encounter = false;
+          startbattle = false;
+          addingfinished = false;
+          encountercounter = 0;
+          $('body').css('cursor', 'crosshair');
+          $(this).dialog("close");
+        }
+      }]
+    });
+    return;
+  }
   window.getSelection().removeAllRanges();
+  invbut.className = "hidden2";
 
   context.clearRect(0, 0, canvas.width, canvas.height);
   fireballimg = new Image();
-  fireballimg.src = "images/fireball.png";
-
-  if (enctype == 0) {
+  if (weaponRatingGlobal == 0){
+    fireballimg.src = "images/fireball.png";
+  }else{
+    fireballimg.src = weaponimage;
+  }
+  imageSearch.clearResults();
+  if (enctype == false) {
     imageSearch.execute(properitem + " wildlife");
 
   }
-  if (enctype == 1) {
+  if (enctype == true) {
     imageSearch.execute(properitem + " person");
 
   }
   if (startbattle == true) {
+    encountercounter = 0;
     enemyHP = 100;
     emHealth.innerHTML = "Enemy HP: " + enemyHP;
     enemyimg = new Image();
@@ -454,11 +517,11 @@ function beginfight() {
     chomp5 = new Image();
     chomp5.src = "images/c5.png";
 
-    if (enctype == 0) {
+    if (enctype == false) {
       alertwin.innerHTML = "You have enountered a wild animal!";
       alertwin.innerHTML += "<p><img src=" + enemies.doctor.url + " alt=\"Animal\" height=" + enemies.doctor.ysize * 2 + " width=" + enemies.doctor.xsize * 2 + "></p>";
     }
-    if (enctype == 1) {
+    if (enctype == true) {
       alertwin.innerHTML = "You have enountered an escaped prisoner!";
       alertwin.innerHTML += "<p><img src=" + enemies.doctor.url + " alt=\"Animal\" height=" + enemies.doctor.ysize * 2 + " width=" + enemies.doctor.xsize * 2 + "></p>";
     }
@@ -480,6 +543,7 @@ function beginfight() {
     });
 
   } else {
+    encountercounter++;
     setTimeout(beginfight, 1);
   }
 }
@@ -659,14 +723,14 @@ function fireball() {
       if (attacking == 0) {
         pauseSpeed(80);
       }
-      enemyHP -= 10 + weaponRatingGlobal;
+      enemyHP -= 50 + weaponRatingGlobal;
       emHealth.innerHTML = "Enemy HP: " + enemyHP;
       if (enemyHP <= 0) {
         encounter = false;
         startbattle = false;
         emHealth.innerHTML = " ";
         //enemyimg = undefined;
-        itemtype = Math.floor(Math.random() * (2.9 - 0)) + 0;
+        itemtype = Math.floor(Math.random() * (3.9 - 0)) + 0;
         additem = true;
         additemfun();
         setTimeout(clearcan, 20);
@@ -691,6 +755,20 @@ function fireball() {
 
 ///add items
 function additemfun() {
+  if (encountercounter == 500) {
+    loadsc2.className = "hidden";
+    loadsc.className = "hidden";
+    itemadded = false;
+    additem = false;
+    invopened = false;
+    encounter = false;
+    startbattle = false;
+    addingfinished = false;
+    invbut.className = "normal2";
+    encountercounter = 0;
+    return;
+  }
+  imageSearch.clearResults();
   if (itemtype == 0) {
     imageSearch.execute(properitem + " clothing");
 
@@ -703,45 +781,86 @@ function additemfun() {
     imageSearch.execute(properitem + " cuisine");
 
   }
+  if (itemtype == 3) {
+    imageSearch.execute(properitem + " currency");
+
+  }
   if (itemadded == true) {
-    //console.log(enemies.doctor.url);
-    //4th item = whether equipped or not
-    if (itemtype == 0) {
-      //CLOTHING
-      var armourRating = (Math.floor(Math.random() * (5 - 1)) + 1) + level * 2;
-      invitems[invitems.length] = [enemies.doctor.url, enemies.doctor.ysize, enemies.doctor.xsize, "Clothing from " + properitem, 1, false, armourRating];
+    encountercounter = 0;
+
+    function addTheItem() {
+      var addingfinished = false;
+      //console.log(enemies.doctor.url);
+      //4th item = whether equipped or not
+      if (itemtype == 0) {
+        //CLOTHING
+        var armourRating = (Math.floor(Math.random() * (5 - 1)) + 1) + level * 2;
+        var clothstring = "Clothing from " + properitem;
+        eneminvitems[eneminvitems.length] = [enemies.doctor.url, enemies.doctor.ysize, enemies.doctor.xsize, clothstring, 1, false, armourRating];
+
+      }
+      //WEAPONS
+      if (itemtype == 1) {
+
+        var weaponRating = (Math.floor(Math.random() * (10 - 5)) + 5) + level * 2;
+        var weapstring = "Weapon from " + properitem;
+        eneminvitems[eneminvitems.length] = [enemies.doctor.url, enemies.doctor.ysize, enemies.doctor.xsize, weapstring, 2, false, weaponRating];
+
+      }
+      if (itemtype == 2) {
+        //FOOD
+
+        var foodPotency = (Math.floor(Math.random() * (10 - 5)) + 5) + level * 2;
+        var foodstring = "Food from " + properitem;
+        eneminvitems[eneminvitems.length] = [enemies.doctor.url, enemies.doctor.ysize, enemies.doctor.xsize, foodstring, 3, false, foodPotency];
+
+      }
+      if (itemtype == 3) {
+        //FOOD
+
+        var moneyWorth = (Math.floor(Math.random() * (50 - 1)) + 1) + level * 2;
+        var moneystring = "Currency from " + properitem;
+        eneminvitems[eneminvitems.length] = [enemies.doctor.url, enemies.doctor.ysize, enemies.doctor.xsize, moneystring, 4, false, moneyWorth];
+
+      }
+      ///DO WE ADD A NEW ITEM? I DUNNO!
+      addingfinished = Math.random() < .5;
+      if (addingfinished == false) {
+        itemadded = false;
+        additem = true;
+        itemtype = Math.floor(Math.random() * (3.9 - 0)) + 0;
+        setTimeout(additemfun, 10);
+        return;
+      }
+      if (addingfinished == true) {
+        refreshenemyinv();
+        $("#enemyinventory").dialog({
+          //  resizable: false,
+          width: 600,
+          height: 550,
+          dialogClass: "no-close",
+          buttons: [{
+            text: "OK",
+            click: function() {
+              loadsc2.className = "hidden";
+              loadsc.className = "hidden";
+              itemadded = false;
+              additem = false;
+              invopened = false;
+              encounter = false;
+              startbattle = false;
+              addingfinished = false;
+              invbut.className = "normal2";
+              $('body').css('cursor', 'crosshair');
+              $(this).dialog("close");
+            }
+          }]
+        });
+      }
     }
-    //WEAPONS
-    if (itemtype == 1) {
-      var weaponRating = (Math.floor(Math.random() * (10 - 5)) + 5) + level * 2;
-      invitems[invitems.length] = [enemies.doctor.url, enemies.doctor.ysize, enemies.doctor.xsize, "Weapon from " + properitem, 2, false, weaponRating];
-    }
-    if (itemtype == 2) {
-      //FOOD
-      var foodPotency = (Math.floor(Math.random() * (10 - 5)) + 5) + level * 2;
-      invitems[invitems.length] = [enemies.doctor.url, enemies.doctor.ysize, enemies.doctor.xsize, "Food from " + properitem, 3, false, foodPotency];
-    }
-    refreshinv();
-    //this will be the enemy's inv, item won't be added automatially
-    $("#inventory").dialog({
-      //  resizable: false,
-      width: 600,
-      height: 550,
-      dialogClass: "no-close",
-      buttons: [{
-        text: "OK",
-        click: function() {
-          loadsc2.className = "hidden";
-          loadsc.className = "hidden";
-          itemadded = false;
-          additem = false;
-          invopened = false;
-          $('body').css('cursor', 'crosshair');
-          $(this).dialog("close");
-        }
-      }]
-    });
+    addTheItem();
   } else {
+    encountercounter++;
     setTimeout(additemfun, 1);
   }
 }
@@ -778,9 +897,57 @@ function refreshinv() {
   document.getElementById('inventory').innerHTML = htmlstring;
 }
 
+function refreshenemyinv() {
+  invopened = true;
+
+  var htmlstring;
+  htmlstring = '<table border="2" style="width:100%">';
+  for (i = 0; i < eneminvitems.length; i++) {
+    var v0 = eneminvitems[i][0]
+    var v1 = eneminvitems[i][1]
+    var v2 = eneminvitems[i][2]
+    var v3 = eneminvitems[i][3]
+    var v4 = eneminvitems[i][4]
+    var v5 = eneminvitems[i][5]
+    var v6 = eneminvitems[i][6]
+    if (eneminvitems[i] != "not") {
+      htmlstring += '<tr>';
+      htmlstring += '<td>';
+      htmlstring += "<img src=" + eneminvitems[i][0] + " alt=" + eneminvitems[i][4] + " height=" + eneminvitems[i][1] + " width=" + eneminvitems[i][2] + ">";
+      htmlstring += '</td>';
+      htmlstring += '<td>';
+      if (eneminvitems[i][4] == 1) {
+        htmlstring += '<a href="javascript:void(0)" onclick="takeitem(' + i + ');">' + eneminvitems[i][3] + '<br>Armour Rating: ' + eneminvitems[i][6] + '</a>';
+      }
+      if (eneminvitems[i][4] == 2) {
+        htmlstring += '<a href="javascript:void(0)" onclick="takeitem(' + i + ');">' + eneminvitems[i][3] + '<br>Clothing Rating: ' + eneminvitems[i][6] + '</a>';
+      }
+      if (eneminvitems[i][4] == 3) {
+        htmlstring += '<a href="javascript:void(0)" onclick="takeitem(' + i + ');">' + eneminvitems[i][3] + '<br>Food Rating: ' + eneminvitems[i][6] + '</a>';
+      }
+      if (eneminvitems[i][4] == 4) {
+        htmlstring += '<a href="javascript:void(0)" onclick="equipitem(' + i + ',' + eneminvitems[i][4] + ');">' + eneminvitems[i][3] + '<br>Money Amount: +' + eneminvitems[i][6] + '</a>';
+      }
+      htmlstring += '</td>';
+      htmlstring += '</tr>';
+    }
+  }
+  htmlstring += '</table>';
+  document.getElementById('enemyinventory').innerHTML = htmlstring;
+}
+
+function takeitem(itemnumberfun) {
+  invitems[invitems.length] = [eneminvitems[itemnumberfun][0], eneminvitems[itemnumberfun][1], eneminvitems[itemnumberfun][2], eneminvitems[itemnumberfun][3], eneminvitems[itemnumberfun][4], eneminvitems[itemnumberfun][5], eneminvitems[itemnumberfun][6]];
+  eneminvitems[itemnumberfun] = "not";
+  refreshenemyinv();
+  refreshinv();
+  console.log("asdf")
+}
+
 function equipitem(itemnum, itemtype) {
 
   var donothing = false;
+  if (itemtype !=4){
   for (i = 0; i < invitems.length; i++) {
     if (invitems[i][5] == true && invitems[i][4] == itemtype && i != itemnum) {
       donothing = true;
@@ -797,14 +964,25 @@ function equipitem(itemnum, itemtype) {
       }
       if (itemtype == 2) {
         weaponRatingGlobal = invitems[itemnum][6];
+        //make weapon image into fireball image
+        weaponimage = invitems[itemnum][0];
       }
     }
   }
+  //food
   if (itemtype == 3) {
     health += invitems[itemnum][6];
-    hudHealth.innerHTML = "Health = " + health;
+    hudHealth.innerHTML = "Health: " + health;
     invitems[itemnum] = "not";
 
+  }
+  //money
+}
+  if (itemtype == 4) {
+    money += eneminvitems[itemnum][6];
+    moneydiv.innerHTML = "Money: " +money;
+    eneminvitems[itemnum] = "not";
+    refreshenemyinv();
   }
   refreshinv();
 }
@@ -832,8 +1010,10 @@ function openinv() {
       itemadded = false;
       additem = false;
       invopened = false;
+
       $("#inventory").dialog("close");
     }
+
   }
   /*
   var offsetsize = 75;

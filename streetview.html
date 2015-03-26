@@ -21,14 +21,29 @@
       .normalone{
         display: inline;
       }
+      .hidden2 {
+        display:none;
+      }
+      .normal2{
+        display: inline;
+        pointer-events: all;
+      }
+      #TopOne a:link { color: #00DDFF; }
+      #TopOne a:visited { color: #00DDFF; }
+      #TopOne a:hover { color: #00DDFF; }
+      #TopOne a:active { color: #00DDFF; }
       #TopOne{
+        font-family: ‘Lucida Console’, Monaco, monospace;
+        pointer-events: none;
+        padding: 10px 10px;
         position: relative;
-        height:100px;
+        height:200px;
         float:right;
-        width:200px;
+        width:300px;
         right:20px;
         z-index: 1;
-        background-color: white;
+        color: #ffffff;
+        background-color: rgba(0, 0, 0, 0.4);
       }
       #leftarm{
         pointer-events: none;
@@ -51,6 +66,9 @@
         bottom:0px;
         z-index: 50;
         right: 0px;
+      }
+      #ibcontain{
+        pointer-events: all;
       }
       #pano{
 
@@ -77,10 +95,11 @@
 
     <div id="loadscreen" style="position:absolute; left:0px; top: 0px; width: 100%; height: 100%; z-index: 51; background-color: white;"><center>LOADING GAME</center></div>
     <div id="pano" style="position:absolute; left:0px; top: 0px; width: 100%; height: 100%;"></div>
-    <div id="TopOne" align="right"><div id = "health"></div><div id = "country"></div><div id = "emHP"></div><div id = "invbutton"><a href="javascript:void(0)" onclick="openinv();">Inventory</a></div></div>
+    <div id="TopOne" align="right"><div id = "health"></div><div id = "moneydiv"></div><div id = "country"></div><div id = "emHP"></div><div id = "invbutton" class="normal2"><a href="javascript:void(0)" onclick="openinv();">Inventory</a></div></div>
     <div id="popupwin" class="hidden" title="herp"></div>
     <div id="inventory" class="hidden" title="Inventory">inv</div>
     <div id="enemyinventory" class="hidden" title="Items Found!">inv</div>
+    <div id="failedenc" class="hidden" title="Nothing was there!">The enemy cowared at your strength and ran away!</div>
 
     <script type="text/javascript" src="googlejs.js"></script>
   </body>
