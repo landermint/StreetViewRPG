@@ -714,10 +714,21 @@ function fireball() {
 
   function fireball2() {
     var offsetsize = sizex / 2;
+
+    if (sizex > 0){
     context2.clearRect(mousexnew - offsetsize - 25, mouseynew - offsetsize - 25, sizex + 50, sizey + 50);
     context2.drawImage(fireballimg, mousexnew - offsetsize, mouseynew - offsetsize, sizex, sizey);
-    sizex -= 15;
-    sizey -= 15;
+
+  } else {
+    sizex = undefined;
+    sizey = undefined;
+  }
+  sizex -= 15;
+  sizey -= 15;
+  if (sizex < 1 && sizex > -25){
+    context2.clearRect(mousexnew - offsetsize - 25, mouseynew - offsetsize - 25, 10 + 50, 10 + 50);
+    //return;
+  }
     if (sizex < 1 && sizex > -25 && mousexnew - offsetsize > enemyposx && mousexnew - offsetsize < enemyposx + imgdem && mouseynew - offsetsize > enemyposy && mouseynew - offsetsize < enemyposy + imgdem && startbattle == true) {
       attacked = 1;
       if (attacking == 0) {
@@ -748,8 +759,9 @@ function fireball() {
 
     //console.log(mousecounter3);
   }
-
-  fireball2();
+  if (sizex > -25) {
+    fireball2();
+  }
 
 }
 
