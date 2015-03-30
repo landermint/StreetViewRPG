@@ -32,24 +32,46 @@
       #TopOne a:visited { color: #00DDFF; }
       #TopOne a:hover { color: #00DDFF; }
       #TopOne a:active { color: #00DDFF; }
+
+      #privatejetmarker a:link { color: #00DDFF; }
+      #privatejetmarker a:visited { color: #00DDFF; }
+      #privatejetmarker a:hover { color: #00DDFF; }
+      #privatejetmarker a:active { color: #00DDFF; }
       #TopOne{
         font-family: ‘Lucida Console’, Monaco, monospace;
         pointer-events: none;
-        padding: 10px 10px;
-        position: relative;
+        padding-top: 20px;
+        padding-right: 20px;
+        padding-bottom: 5px;
+        padding-left: 5px;        position: fixed;
         height:200px;
         float:right;
         width:300px;
-        right:20px;
+        top:0px;
+        right:0px;
         z-index: 1;
         color: #ffffff;
         background-color: rgba(0, 0, 0, 0.4);
+      }
+      #privatejetout{
+        pointer-events: none;
+        font-family: ‘Lucida Console’, Monaco, monospace;
+        color: #ffffff;
+        padding: 20px 20px;
+        position: fixed;
+        float:left;
+        top:0px;
+        z-index: 1;
+        left: 0px;
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+      #privatejetmarker{
+        pointer-events: all;
       }
       #leftarm{
         pointer-events: none;
         width:270px;
         height:360px;
-
         position: fixed;
         float:left;
         bottom:0px;
@@ -70,8 +92,18 @@
       #ibcontain{
         pointer-events: all;
       }
+
       #pano{
 
+      }
+      #loadgameid{
+        position: absolute;
+         width: 200px;
+         height: 50px;
+         top: 50%;
+         left: 50%;
+         margin-left: -100px; /* margin is -0.5 * dimension */
+         margin-top: -25px;
       }
       .no-close .ui-dialog-titlebar-close {
         display: none;
@@ -93,13 +125,15 @@
 
     <div id="battlescreen" class="hidden" style="position:absolute; left:0px; top: 0px; width: 100%; height: 100%; z-index: 48;"><canvas id="myCanvas"  style="position:absolute; left:0px; top: 0px; border:10px solid #FF0000;">></canvas></div>
 
-    <div id="loadscreen" style="position:absolute; left:0px; top: 0px; width: 100%; height: 100%; z-index: 51; background-color: white;"><center>LOADING GAME</center></div>
+    <div id="loadscreen" style="position:absolute; left:0px; top: 0px; width: 100%; height: 100%; z-index: 51; background-color: white;"><div id = "loadgameid" align="center">LOADING GAME</div></div>
     <div id="pano" style="position:absolute; left:0px; top: 0px; width: 100%; height: 100%;"></div>
     <div id="TopOne" align="right"><div id = "health"></div><div id = "moneydiv"></div><div id = "country"></div><div id = "emHP"></div><div id = "invbutton" class="normal2"><a href="javascript:void(0)" onclick="openinv();">Inventory</a></div></div>
-    <div id="popupwin" class="hidden" title="herp"></div>
+    <div id="popupwin" class="hidden" title="Encounter!"></div>
     <div id="inventory" class="hidden" title="Inventory">inv</div>
-    <div id="enemyinventory" class="hidden" title="Items Found!">inv</div>
+    <div id="enemyinventory" class="hidden" title="Items Found! -- Click item to pick up">inv</div>
     <div id="failedenc" class="hidden" title="Nothing was there!">The enemy cowared at your strength and ran away!</div>
+    <div id="privatejet" class="hidden" title = "Your private jet has arrived"></div>
+    <div id="privatejetout" class="hidden"><div id="privatejetmarker" class="hidden"></div></div>
 
     <script type="text/javascript" src="googlejs.js"></script>
   </body>

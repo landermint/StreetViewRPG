@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>StreetView Sorcerer</title>
+    <style>
+    @import url('http://fonts.googleapis.com/css?family=Open+Sans');
+    body {
+      background-color: #AA3939;
+      font-family: 'Open Sans', sans-serif;
+
+    }
+    a:link {
+        color: #DDF0F0;
+    }
+
+    /* visited link */
+    a:visited {
+        color: #DDF0F0;
+    }
+
+    /* mouse over link */
+    a:hover {
+        color: #DDF0F0;
+    }
+
+    /* selected link */
+    a:active {
+        color: #DDF0F0;
+    }
+    #rightarm{
+      width:425px;
+      height:283px;
+
+      position: fixed;
+      float:right;
+      bottom:0px;
+
+      right: 0px;
+      z-index: -1;
+    }
+    #leftarm{
+      width:425px;
+      height:315px;
+      color: #E8F8C9;
+
+      position: fixed;
+      float:left;
+      bottom:0px;
+      z-index: 50;
+      left: 25px;
+      z-index: -1;
+
+    }
+    #ontop{
+      color: #000000;
+      font-weight: bold;
+      z-index: 1000;
+      text-align: center;
+      position: absolute;
+      width: 500px;
+      height: 50px;
+      left: 50%;
+      margin-left: -250px; /* margin is -0.5 * dimension */
+      margin-top: 15px;
+    }
+    #titleid{
+      font-size: 300%;
+    }
+    #linkid{
+      font-size: 150%;
+    }
+    #smalltext{
+      font-size: 75%;
+    }
+    </style>
+  </head>
+  <body>
+<div id = "ontop">
+  <div id = "titleid">
+    <p>
+    StreetView Sorcerer
+  </p>
+</div>
+<div id = "linkid">
+  <a href= "streetview.html">Click HERE to play</a>
+</div>
+</div>
+<div id="rightarm" align="right"><img src="images/cutout.png" alt="promo"></div>
+<div id="leftarm" align="left"><div id = "linkid" align="center">
+<p>Collect items and fight enemies from around the world!</p></div>
+<p>StreetView Sorcerer is a game taking place within the bounds of Google's algorythmic logic</p>
+<p>You will be sent to a random location on the globe with a duty to save the world from perilous danger</p>
+<div align="center"><p>------------------------------------<p></div>
+<div id = "smalltext">  <p><a href= "http://webspace.ocad.ca/~jl13sn/">Jack Lambermont</a> --- <a href= "">About</a></p> </div>
+</div>
+
+  </body>
+  </html>
