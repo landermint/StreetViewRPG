@@ -4,6 +4,8 @@ function dothis(){
   setTimeout(dothis,1);
 }
 */
+
+///define our many canvases the game uses
 var canvas = document.getElementById('myCanvas'),
   context = canvas.getContext('2d');
 
@@ -49,16 +51,18 @@ var counter = 0;
 //start at zero, this will increment as searches are performed
 var walkThroughImages = 0;
 
-//search numbers
+//search numbers --- has to be 8 b/c google sux
 var maxnumber = 8;
 
-//store images here, really shouldn't be named enemies
+//store images here, really shouldn't be named enemies but whetever
 var enemies = {
 
 }
+//initiate some variables
 var fireballCounter = 0;
 var gamestage = 0;
 var enemyHurtCounter = 0;
+
 //coords
 var locations = []
 locations[0] = [
@@ -3288,6 +3292,7 @@ locations[61] = [
 ];
 
 var health = 100;
+var maxhealth = 100;
 var level = 1;
 var properitem;
 var panorama;
@@ -3299,12 +3304,15 @@ var moneydiv = document.getElementById('moneydiv');
 moneydiv.innerHTML = "Money: " + money;
 
 var hudHealth = document.getElementById('health');
-hudHealth.innerHTML = "Health: " + health;
+hudHealth.innerHTML = "Health: " + health + "/"+maxhealth;
 
 var emHealth = document.getElementById('emHP');
 //emHealth.innerHTML = "";
 //game variables
-var numberOfEnemiesRequiredToKill = 5;
+var deathfound = false;
+var startdeath = false;
+var stepcounter = 0;
+var numberOfEnemiesRequiredToKill = 2; //HAHA GREAT VARIABLE NAME JACK
 var jeturl;
 var invcounter = 0;
 var enemiesfought = 0;
@@ -3408,6 +3416,54 @@ window.onkeyup = function(e) {
    }
 }
 */
+/////SOUND FILES
+soundAttack = new Audio;
+soundAttack.src = "audio/attack1fixed.wav";
+soundDamage = new Audio;
+soundDamage.src = "audio/damage1.mp3";
+soundDeath = new Audio;
+soundDeath.src = "audio/deathsound.mp3";
+soundKilled = new Audio;
+soundKilled.src = "audio/enemykilled.mp3";
+soundEncounter = new Audio;
+soundEncounter.src = "audio/enemyencountered.mp3";
+soundPlane = new Audio;
+soundPlane.src = "audio/foundplane.mp3";
+soundStartgame = new Audio;
+soundStartgame.src = "audio/gamestarted.mp3";
+soundPlaneLeave = new Audio;
+soundPlaneLeave.src = "audio/swoosh.wav";
+chompSound = new Audio;
+chompSound.src = "audio/chompsound.wav";
+equipClothesSound = new Audio;
+equipClothesSound.src = "audio/equipclothes.wav";
+equipWeapSound = new Audio;
+equipWeapSound.src = "audio/equipweap.wav";
+
+
+var stepnumber = 0;
+
+soundStep0 = new Audio;
+soundStep1 = new Audio;
+soundStep2 = new Audio;
+soundStep3 = new Audio;
+soundStep4 = new Audio;
+soundStep5 = new Audio;
+soundStep6 = new Audio;
+soundStep7 = new Audio;
+soundStep8 = new Audio;
+soundStep9 = new Audio;
+
+soundStep0.src = "audio/steps/0.wav";
+soundStep1.src = "audio/steps/1.wav";
+soundStep2.src = "audio/steps/2.wav";
+soundStep3.src = "audio/steps/3.wav";
+soundStep4.src = "audio/steps/4.wav";
+soundStep5.src = "audio/steps/5.wav";
+soundStep6.src = "audio/steps/6.wav";
+soundStep7.src = "audio/steps/7.wav";
+soundStep8.src = "audio/steps/8.wav";
+soundStep9.src = "audio/steps/9.wav";
 
 function searchComplete(termen) {
 
@@ -3453,6 +3509,9 @@ function searchComplete(termen) {
     if (jetfound == true){
       startjet = true;
     }
+    if (deathfound == true){
+      startdeath = true;
+    }
   }
 }
 
@@ -3467,7 +3526,7 @@ function OnLoad() {
 
   imageSearch.setSearchCompleteCallback(this, searchComplete, null);
 
-  //this is where the FIRST search term is
+  //this is where the FIRST search term is -- it should just be some random bullshit
   imageSearch.execute("hello");
 
   // Include the required Google branding
@@ -3478,11 +3537,17 @@ function OnLoad() {
 google.setOnLoadCallback(OnLoad);
 ////
 function initialize() {
+  stepcounter = 0;
   lacancon.drawImage(la1, 0, 0);
   racancon.drawImage(ra1, 0, 0);
   var randomnumb = Math.floor(Math.random() * (locations.length - 0)) + 0;
   var theplace = locations[randomnumb][Math.floor(Math.random() * (locations.length - 0)) + 0];
-  var theplace2 = theplace.split(",");
+  if (theplace == undefined){
+    setTimeout(initialize,1);
+    return;
+  }else{
+    var theplace2 = theplace.split(",");
+  }
 
   var fenway = new google.maps.LatLng(theplace2[0], theplace2[1]);
 
@@ -3492,6 +3557,7 @@ function initialize() {
   };
   var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
   var panoramaOptions = {
+    linksControl: false,
     position: fenway,
     zoomControl: false,
     panControl: false,
@@ -3509,11 +3575,16 @@ var links;
 
 //main function, loaded each time step is taken
 function findpos() {
+  stepcounter++;
   google.maps.event.addListener(panorama, 'links_changed', function() {
+    //play step sound
+    if (stepnumber == 10){
+      stepnumber = 0;
+    }
+    var stepname = "soundStep"+stepnumber+".play();";
+    eval(stepname); //ppl say not to use eval but y?
+    stepnumber++;
     links = panorama.getLocation();
-    //links5 = panorama.getCopyright();
-
-    //var links5 = panorama.getLocation();
     //console.log(links.latLng["k"]);
     //console.log(links.latLng["D"]);
     $.getJSON('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + links.latLng["k"] + ',' + links.latLng["D"] + '&result_type=country&key=AIzaSyATOOQ96BxW7zMtcl86aZdS5droq38sfc0', function(data) {
@@ -3524,11 +3595,12 @@ function findpos() {
       panoramaService.getPanoramaById(links.pano, function(res, stat){
         //console.log(res.copyright);
         var copyrightvar;
-        //// HERE WE MAKE SURE THAT THE PANORAMA ISN'T SOME RANDOM PERSON'S BULLSHIT
+        //// HERE WE MAKE SURE THAT THE PANORAMA ISN'T SOME RANDOM PERSON'S BULLSHIT - because often its a single location and the player wouldn't be able to move
         if (res.copyright.indexOf('Google') > -1){
           copyrightvar = true;
         } else {
           copyrightvar = false;
+          //send us to a new location if the image isn't google's
           newLocation();
         }
         console.log(copyrightvar);
@@ -3539,8 +3611,10 @@ function findpos() {
       // if this is the first screen in the game, initiate the following
       if (gamestage == 0) {
         //  searchpres2();
-        searchpres();
-        imageSearch.execute(properitem + " leader");
+        if (stepcounter < 2){
+          searchpres();
+          imageSearch.execute(properitem + " leader");
+        }
         gamestage++;
       } else {
         //random number for battle
@@ -3579,7 +3653,8 @@ function searchpres() {
     var popupwin = document.getElementById('popupwin');
     popupwin.innerHTML = "<center> <img src=" + enemies.doctor.url + " alt=\"leader\" height=" + enemies.doctor.ysize * 2 + " width=" + enemies.doctor.xsize * 2 + "></center><p>Our beautiful homeland of " + properitem + " has been overrun by escaped criminals and dangerous wildlife! Only you can save us.</p><p>Navegate the map by clicking the ground or arrow buttons, destroying the enemies that cross your path. For the homeland!</p>";
   //  popupwin.title = "Welcome to my Country!";
-
+  //play audio
+    soundStartgame.play();
     $("#popupwin").dialog({
       resizable: false,
       width: 550,
@@ -3632,7 +3707,7 @@ function beginfight() {
     });
     return;
   }
-  window.getSelection().removeAllRanges();
+  //window.getSelection().removeAllRanges();
   invbut.className = "hidden2";
 
   context.clearRect(0, 0, canvas.width, canvas.height);
@@ -3680,7 +3755,7 @@ function beginfight() {
       alertwin.innerHTML += "<p><img src=" + enemies.doctor.url + " alt=\"Animal\" height=" + enemies.doctor.ysize * 2 + " width=" + enemies.doctor.xsize * 2 + "></p>";
     }
 
-
+    soundEncounter.play();
     $("#popupwin").dialog({
       //  resizable: false,
       width: 400,
@@ -3695,6 +3770,10 @@ function beginfight() {
         }
       }]
     });
+    //$('#battlescreen2').trigger( "focus" );
+    //$( "#battlescreen2" ).focus();
+    //document.getElementById('pano').className = "cantclick";
+    document.getElementById('pano').tabindex = "-1";
 
   } else {
     encountercounter++;
@@ -3741,8 +3820,11 @@ function beginfighttrue() {
 var chompframe = 0;
 
 function chomp() {
-  chompframe++;
   context2.clearRect(enemyposx - modify / 2, enemyposy - modify / 2, imgdem + modify, imgdem + modify);
+  if (speed == 0 && speed2 == 0){
+    chompSound.play();
+
+  chompframe++;
   if (chompframe == 1) {
     context2.drawImage(chomp1, enemyposx, enemyposy);
   }
@@ -3762,16 +3844,20 @@ function chomp() {
     //damage
     var healthtake = (Math.floor(Math.random() * ((5 + level * 2) - (level * 1.5)) + (level * 1.5))) - armourRatingGlobal;
     if (healthtake > 0) {
-      health -= healthtake;
+      health -= healthtake+50;
     }
-    hudHealth.innerHTML = "Health = " + health;
+    hudHealth.innerHTML = "Health: " + health + "/"+maxhealth;
 
     context2.clearRect(enemyposx - modify / 2, enemyposy - modify / 2, imgdem + modify, imgdem + modify);
-
+    if (health <= 0){
+      dead();
+    }
   }
+}
   if (chompframe < 7) {
     setTimeout(chomp, 65);
   }
+
 }
 
 function pauseSpeed(speedvar) {
@@ -3804,7 +3890,7 @@ function getMousePos(canvas, evt) {
   };
 
 }
-
+///Click listener
 canvas2.addEventListener('mousedown', function(evt) {
   var mousePos = getMousePos(canvas2, evt);
   //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
@@ -3812,6 +3898,7 @@ canvas2.addEventListener('mousedown', function(evt) {
   mousey = mousePos.y;
   counterup();
   if (fireballCounter == 0) {
+    soundAttack.play();
     mouseclick();
 
     setTimeout(fireball, 20);
@@ -3888,9 +3975,11 @@ function fireball() {
       if (attacking == 0) {
         pauseSpeed(80);
       }
+      soundDamage.play();
       enemyHP -= 50 + weaponRatingGlobal;
       emHealth.innerHTML = "Enemy HP: " + enemyHP;
       if (enemyHP <= 0) {
+        soundKilled.play();
         encounter = false;
         startbattle = false;
         emHealth.innerHTML = " ";
@@ -4017,6 +4106,9 @@ function additemfun() {
               startbattle = false;
               addingfinished = false;
               enemiesfought++;
+              eneminvitems.length = 0;
+              //eneminvitems[0] = undefined;
+
               if (enemiesfought >= numberOfEnemiesRequiredToKill){
                 privateJet();
               }
@@ -4046,6 +4138,7 @@ function privateJet(){
       setTimeout(privateJet,1);
     } else {
       jeturl = enemies.doctor.url;
+      soundPlane.play();
       document.getElementById('privatejet').innerHTML = "<img src =\""+jeturl+"\"><br>Your Private Jet has arrived to take you away!<br>Press OKAY to progress or CANCEL to stay a little longer.";
       $("#privatejet").dialog({
         //  resizable: false,
@@ -4076,6 +4169,8 @@ function privateJet(){
   }
 }
 function newLocation(){
+  stepcounter = 0;
+  soundPlaneLeave.play();
   loadsc2.className = "hidden";
   loadsc.className = "hidden";
   startjet = false;
@@ -4090,6 +4185,7 @@ function newLocation(){
   enemiesfought = 0;
   openfirstwin = false;
   level++;
+  document.getElementById('map-canvas').className = "hidden";
   document.getElementById('privatejetmarker').className = "hidden";
   document.getElementById('privatejetout').className = "hidden";
 
@@ -4104,7 +4200,12 @@ function refreshinv() {
       if (invitems[i][5] == false) {
         htmlstring += '<tr>';
       } else {
-        htmlstring += '<tr bgcolor="red">';
+        if (invitems[i][4] == 2){
+          htmlstring += '<tr bgcolor="red">';
+        }
+        if (invitems[i][4] == 1){
+          htmlstring += '<tr bgcolor="blue">';
+        }
       }
       htmlstring += '<td>';
       htmlstring += "<img src=" + invitems[i][0] + " alt=" + invitems[i][4] + " height=" + invitems[i][1] + " width=" + invitems[i][2] + ">";
@@ -4185,14 +4286,24 @@ function equipitem(itemnum, itemtype) {
     }
     console.log(itemtype);
     if (donothing == false) {
+      // un equip
       if (invitems[itemnum][5] == true) {
         invitems[itemnum][5] = false;
+        if (itemtype == 1) {
+          equipClothesSound.play();
+        }
+        if (itemtype == 2) {
+          equipWeapSound.play();
+        }
+        //equip
       } else {
         invitems[itemnum][5] = true;
         if (itemtype == 1) {
+          equipClothesSound.play();
           armourRatingGlobal = invitems[itemnum][6];
         }
         if (itemtype == 2) {
+          equipWeapSound.play();
           weaponRatingGlobal = invitems[itemnum][6];
           //make weapon image into fireball image
           weaponimage = invitems[itemnum][0];
@@ -4202,7 +4313,10 @@ function equipitem(itemnum, itemtype) {
     //food
     if (itemtype == 3) {
       health += invitems[itemnum][6];
-      hudHealth.innerHTML = "Health: " + health;
+      if (health > maxhealth){
+        health = maxhealth;
+      }
+      hudHealth.innerHTML = "Health: " + health+ "/" +maxhealth;
       invitems[itemnum] = "not";
 
     }
@@ -4245,6 +4359,46 @@ function openinv() {
     }
 
   }
+  ///YOU HAVE DIED RESET ALL VARS AND SET OVER
+function dead(){
+  document.getElementById('deathinner').innerHTML = "You Have Died";
+  loadsc2.className = "hidden";
+  loadsc.className = "hidden";
+  invitems.length = 0;
+  //invitems[0] = undefined;
+  refreshinv();
+  itemadded = false;
+  additem = false;
+  invopened = false;
+  encounter = false;
+  startbattle = false;
+  addingfinished = false;
+  encountercounter = 0;
+  invbut.className = "normal2";
+  level = 1;
+  maxhealth = 100;
+  health = maxhealth;
+  hudHealth.innerHTML = "Health: " + health + "/"+maxhealth;
+  document.getElementById('deathscreen').className = "normalone";
+  soundDeath.play();
+  deathsearch();
+  setTimeout(notdead,5000);
+}
+function notdead(){
+  deathfound = false;
+  startdeath = false;
+  document.getElementById('deathscreen').className = "hidden";
+  newLocation();
+}
+function deathsearch(){
+  if (startdeath == true){
+    document.getElementById('deathinner').innerHTML = "You Have Died <br> <img src = "+enemies.doctor.url+" height=\""+enemies.doctor.ysize*2+"\" width=\""+enemies.doctor.xsize*2+"\">";
+  } else {
+    deathfound = true;
+    imageSearch.execute(properitem + " funeral");
+    setTimeout(deathsearch,1);
+  }
+}
   /*
   var offsetsize = 75;
   context.drawImage(fireballimg, mousex-offsetsize, mousey-offsetsize, 150, 150);

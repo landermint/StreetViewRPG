@@ -7,6 +7,7 @@
     <title>Street View service</title>
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
     <style>
+    @import url('http://fonts.googleapis.com/css?family=Open+Sans');
     body {
       overflow:hidden;
     }
@@ -27,6 +28,14 @@
       .normal2{
         display: inline;
         pointer-events: all;
+      }
+      .cantclick{
+        -moz-user-focus: ignore;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -o-user-select: none;
+        user-select: none;
       }
       #TopOne a:link { color: #00DDFF; }
       #TopOne a:visited { color: #00DDFF; }
@@ -96,14 +105,35 @@
       #pano{
 
       }
+      #deathscreen{
+        z-index: 52;
+        position: absolute;
+         width: 100%;
+         height: 100%;
+         top: 0px;
+         left: 0px;
+         background-color: #000000;
+      }
+      #deathinner{
+        color: #ffffff;
+        position: absolute;
+         width: 600px;
+         height: 600px;
+         top: 50%;
+         left: 50%;
+         margin-left: -300px; /* margin is -0.5 * dimension */
+         margin-top: -300px;
+      }
       #loadgameid{
+        font-family: 'Open Sans', sans-serif;
+        color: #E8F8C9;
         position: absolute;
          width: 200px;
-         height: 50px;
+         height: 200px;
          top: 50%;
          left: 50%;
          margin-left: -100px; /* margin is -0.5 * dimension */
-         margin-top: -25px;
+         margin-top: -100px;
       }
       .no-close .ui-dialog-titlebar-close {
         display: none;
@@ -115,6 +145,7 @@
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
   </head>
   <body>
+    <div id="universal">
     <div id="leftarm" align="left"></div>
     <div id="rightarm" align="right"></div>
 
@@ -125,7 +156,7 @@
 
     <div id="battlescreen" class="hidden" style="position:absolute; left:0px; top: 0px; width: 100%; height: 100%; z-index: 48;"><canvas id="myCanvas"  style="position:absolute; left:0px; top: 0px; border:10px solid #FF0000;">></canvas></div>
 
-    <div id="loadscreen" style="position:absolute; left:0px; top: 0px; width: 100%; height: 100%; z-index: 51; background-color: white;"><div id = "loadgameid" align="center">LOADING GAME</div></div>
+    <div id="loadscreen" style="position:absolute; left:0px; top: 0px; width: 100%; height: 100%; z-index: 51; background-color: #AA3939;"><div id = "loadgameid" align="center"><img src="images/globe.gif"><br>loading...</div></div>
     <div id="pano" style="position:absolute; left:0px; top: 0px; width: 100%; height: 100%;"></div>
     <div id="TopOne" align="right"><div id = "health"></div><div id = "moneydiv"></div><div id = "country"></div><div id = "emHP"></div><div id = "invbutton" class="normal2"><a href="javascript:void(0)" onclick="openinv();">Inventory</a></div></div>
     <div id="popupwin" class="hidden" title="Encounter!"></div>
@@ -134,7 +165,8 @@
     <div id="failedenc" class="hidden" title="Nothing was there!">The enemy cowared at your strength and ran away!</div>
     <div id="privatejet" class="hidden" title = "Your private jet has arrived"></div>
     <div id="privatejetout" class="hidden"><div id="privatejetmarker" class="hidden"></div></div>
-
+    <div id="deathscreen" class = "hidden"><div id="deathinner" align="center"></div></div>
     <script type="text/javascript" src="googlejs.js"></script>
+    </div>
   </body>
 </html>
