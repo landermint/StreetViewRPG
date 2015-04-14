@@ -64,72 +64,7 @@ var gamestage = 0;
 var enemyHurtCounter = 0;
 
 //coords
-
-var countries = [
-  "Andorra",
-  "Argentina",
-  "Australia",
-  "Bangladesh",
-  "Belgium",
-  "Bhutan",
-  "Botswana",
-  "Brazil",
-  "Bulgaria",
-  "Cambodia",
-  "Canada",
-  "Chile",
-  "Colombia",
-  "Croatia",
-  "Czech republic",
-  "Denmark",
-  "Dubai",
-  "Ecuador",
-  "Estonia",
-  "Finland",
-  "France",
-  "Germany",
-  "Greece",
-  "Greenland",
-  "Hong kong",
-  "Holland",
-  "Hungary",
-  "Iceland",
-  "Indonesia",
-  "Ireland",
-  "Islands",
-  "Israel",
-  "Italy",
-  "Japan",
-  "Latvia",
-  "Lesotho",
-  "Lithuania",
-  "Luxembourg",
-  "Macau",
-  "Malaysia",
-  "Mexico",
-  "Norway",
-  "New zealand",
-  "Peru",
-  "Poland",
-  "Portugal",
-  "Romania",
-  "Russia",
-  "South Africa",
-  "South Korea",
-  "Serbia",
-  "Singapore",
-  "Slovakia",
-  "Slovenia",
-  "Spain",
-  "Swaziland",
-  "Sweden",
-  "Switzerland",
-  "Taiwan",
-  "Thailand",
-  "United Kingdom",
-  "Ukraine",
-  "United States"
-];
+var locations = []
 locations[0] = [
   "42.540959,1.476564",
   "42.516095,1.553407",
@@ -3374,7 +3309,6 @@ hudHealth.innerHTML = "Health: " + health + "/" + maxhealth;
 var emHealth = document.getElementById('emHP');
 //emHealth.innerHTML = "";
 //game variables -- if u think imma comment all these good luck
-var countryname;
 var firstitem = 0;
 var fighthappening = false;
 var deathfound = false;
@@ -3536,6 +3470,26 @@ soundStep9.src = "audio/steps/9.wav";
 //var request = require('request');
 //var qs = require('querystring');
 
+var request = require('request');
+var qs = require('querystring');
+
+var url = 'https://yboss.yahooapis.com/ysearch/web';
+
+var params = qs.stringify({
+  q: 'Yahoo Mobile Developer Suite',
+  format: 'json',
+  count: '10',
+});
+
+var oauth = {
+  consumer_key: 'Your Consumer Key',
+  consumer_secret: 'Your Consumer Secret'
+};
+
+request.get({ url: url + '?' + params, oauth: oauth, json: true }, function(e, r, body) {
+  console.log(body);
+});
+
 function searchComplete(termen) {
 
   // Check that we got results
@@ -3612,9 +3566,7 @@ function initialize() {
   lacancon.drawImage(la1, 0, 0);
   racancon.drawImage(ra1, 0, 0);
   var randomnumb = Math.floor(Math.random() * (locations.length - 0)) + 0;
-  var randomnumb2 = Math.floor(Math.random() * (locations[randomnumb].length - 0)) + 0;
-  countryname = countries[randomnumb2];
-  var theplace = locations[randomnumb][randomnumb2];
+  var theplace = locations[randomnumb][Math.floor(Math.random() * (locations.length - 0)) + 0];
   if (theplace == undefined) {
     setTimeout(initialize, 1);
     return;
@@ -3660,6 +3612,9 @@ function findpos() {
     links = panorama.getLocation();
     //console.log(links.latLng["k"]);
     //console.log(links.latLng["D"]);
+    $.getJSON('http://pixplorer.co.uk/getimage/',function(data) {
+      console.log(data);
+    });
     $.getJSON('https://maps.googleapis.com/maps/api/geocode/json?latlng=' + links.latLng["k"] + ',' + links.latLng["D"] + '&result_type=country&key=AIzaSyATOOQ96BxW7zMtcl86aZdS5droq38sfc0', function(data) {
       //console.log(data);
       properitem = data.results[0].formatted_address;

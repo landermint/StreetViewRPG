@@ -5,7 +5,8 @@
   <head>
     <meta charset="utf-8">
     <title>Street View service</title>
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/flick/jquery-ui.css" />
+
     <style>
     @import url('http://fonts.googleapis.com/css?family=Open+Sans');
     body {
@@ -115,14 +116,15 @@
          background-color: #000000;
       }
       #deathinner{
-        color: #ffffff;
+        font-family: 'Open Sans', sans-serif;
+        color: #E8F8C9;
         position: absolute;
          width: 600px;
-         height: 600px;
+         height: 300px;
          top: 50%;
          left: 50%;
          margin-left: -300px; /* margin is -0.5 * dimension */
-         margin-top: -300px;
+         margin-top: -150px;
       }
       #loadgameid{
         font-family: 'Open Sans', sans-serif;
@@ -160,12 +162,14 @@
     <div id="pano" style="position:absolute; left:0px; top: 0px; width: 100%; height: 100%;"></div>
     <div id="TopOne" align="right"><div id = "health"></div><div id = "moneydiv"></div><div id = "country"></div><div id = "emHP"></div><div id = "invbutton" class="normal2"><a href="javascript:void(0)" onclick="openinv();">Inventory</a></div></div>
     <div id="popupwin" class="hidden" title="Encounter!"></div>
+    <div id="advicewin" class="hidden" title="Some Advice!">You have found an equippable item! Open your INVENTORY window at the top right to equip it</div>
     <div id="inventory" class="hidden" title="Inventory">inv</div>
-    <div id="enemyinventory" class="hidden" title="Items Found! -- Click item to pick up">inv</div>
+    <div id="enemyinventory" class="hidden" title="Items Found! - Click item to put in Inventory">inv</div>
     <div id="failedenc" class="hidden" title="Nothing was there!">The enemy cowared at your strength and ran away!</div>
     <div id="privatejet" class="hidden" title = "Your private jet has arrived"></div>
     <div id="privatejetout" class="hidden"><div id="privatejetmarker" class="hidden"></div></div>
     <div id="deathscreen" class = "hidden"><div id="deathinner" align="center"></div></div>
+    <!--<script type="text/javascript" src="scripts/googlejs.js"></script>-->
     <script type="text/javascript" src="googlejs.js"></script>
     </div>
   </body>
